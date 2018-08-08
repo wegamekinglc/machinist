@@ -1,7 +1,12 @@
  // Machinist.cpp : Defines the entry point for the console application.
 //
 #include "Handle.h"
-#include <direct.h>
+#ifdef _WIN32
+    #include <direct.h>
+    #define getcwd _getcwd // stupid MSFT "deprecation" warning
+#elif
+    #include <unistd.h>
+#endif
 #include <iostream>
 #include <fstream>
 #include <assert.h>
@@ -239,7 +244,7 @@ namespace
 void XMain(int argc, char* argv[])
 {
 	char buf[2048];
-	_getcwd(buf, 2048);
+	getcwd(buf, 2048);
 	cout << "In directory " << buf << "\n";
 
 	string configFile;
