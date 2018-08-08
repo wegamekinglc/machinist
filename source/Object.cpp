@@ -27,33 +27,33 @@ using std::pair;
 
 namespace
 {
-	static const string HELP("help");
-	static const string VERSION("version");
-	static const string CONDITION("condition");
-	static const string MEMBER("member");
-	static const string START_MEMBERS("&members");
-	static const string START_CONDITIONS("&conditions");
-	static const string IS(" is ");	// includes space separators, meaning tabs won't be recognizes
-	static const string TYPE("type");
-	static const string SUBTYPE("subtype");
-	static const string DIMENSION("dimension");
-	static const string MULTIPLE("multiple");
-	static const string OPTIONAL("optional");
-	static const string REPEAT("repeat");
-	static const string FROM("from");
-	static const string DEFAULT("default");
-	static const string OBJECT("object");
-	static const string IS_RECORD("is_record");
-	static const string IS_STORABLE("is_storable");
-	static const string IS_SETTINGS("is_settings");
-	static const string MANUAL("manual");
-	static const string SETTINGS("settings");
-	static const string STORABLE("storable");
-	static const string RECORD("record");
+	const string HELP("help");
+	const string VERSION("version");
+	const string CONDITION("condition");
+	const string MEMBER("member");
+	const string START_MEMBERS("&members");
+	const string START_CONDITIONS("&conditions");
+	const string IS(" is ");	// includes space separators, meaning tabs won't be recognizes
+	const string TYPE("type");
+	const string SUBTYPE("subtype");
+	const string DIMENSION("dimension");
+	const string MULTIPLE("multiple");
+	const string OPTIONAL("optional");
+	const string REPEAT("repeat");
+	const string FROM("from");
+	const string DEFAULT("default");
+	const string OBJECT("object");
+	const string IS_RECORD("is_record");
+	const string IS_STORABLE("is_storable");
+	const string IS_SETTINGS("is_settings");
+	const string MANUAL("manual");
+	const string SETTINGS("settings");
+	const string STORABLE("storable");
+	const string RECORD("record");
 
-	Info_* NewMember(const Info_* parent, const string& name, const string& type, int dim, bool multiple, bool optional, const string& subtype, const string& from_func, const string& default_val, auto_ptr<Info_>* help)
+	Info_* NewMember(const Info_* parent, const string& name, const string& type, int dim, bool multiple, bool optional, const string& subtype, const string& from_func, const string& default_val, unique_ptr<Info_>* help)
 	{
-		auto_ptr<Info_> retval(new Info_(parent, parent, name));
+		unique_ptr<Info_> retval(new Info_(parent, parent, name));
 		retval->children_.insert(make_pair(TYPE, Info::MakeLeaf(retval.get(),retval->root_,type)));
 		if (dim > 0)
 			retval->children_.insert(make_pair(DIMENSION, Info::MakeLeaf(retval.get(),retval->root_,string(1, '0' + dim))));
@@ -141,7 +141,7 @@ namespace
 				? string()	// one of the optional things started at the start of rest
 				: UntilWhite(rest);
 
-		auto_ptr<Info_> help;
+		unique_ptr<Info_> help;
 		line = ReadHelp(0, parent, ++line, end, &help);	// set help's parent later
 		dst->reset(NewMember(parent, name, type, dim, multiple, optional, subtype, from.first, defval.first, &help));
 		return line;
@@ -160,10 +160,10 @@ namespace
 			 const vector<string>& content)
 		const
 		{
-			auto_ptr<Info_> retval(new Info_(0, 0, info_name));
+			unique_ptr<Info_> retval(new Info_(0, 0, info_name));
 			auto line = content.begin();
 			// read the help
-			auto_ptr<Info_> help;
+			unique_ptr<Info_> help;
 			line = ReadHelp(retval.get(), retval.get(), line, content.end(), &help);
 			if (help.get())
 				retval->children_.insert(make_pair(HELP, Handle_<Info_>(help.release())));

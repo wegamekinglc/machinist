@@ -6,7 +6,7 @@
 #include "Handle.h"
 #endif
 
-using std::auto_ptr;
+using std::unique_ptr;
 struct Info_;
 class Emitter_;
 class StringTransform_;
@@ -25,7 +25,7 @@ namespace ParseUtils
 		 const Info_* root,
 		 vector<string>::const_iterator line,
 		 vector<string>::const_iterator end,
-		 auto_ptr<Info_>* dst,
+		 unique_ptr<Info_>* dst,
 		 vector<Handle_<Info_>>* local_conditions = 0);
 
 	vector<string>::const_iterator ReadInsert
@@ -33,7 +33,7 @@ namespace ParseUtils
 		 const Info_* root,
 		 vector<string>::const_iterator line,
 		 vector<string>::const_iterator end,
-		 auto_ptr<Info_>* dst);
+		 unique_ptr<Info_>* dst);
 
 	bool AddNonempty
 		(Info_* info,

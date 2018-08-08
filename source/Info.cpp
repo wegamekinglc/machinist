@@ -1,11 +1,11 @@
  
 #include "Info.h"
-#include <assert.h>
+#include <cassert>
 #include <algorithm>
 #include <iostream>
 
 using std::map;
-using std::auto_ptr;
+using std::unique_ptr;
 
 bool Info::IsRoot(const Info_& i)
 {
@@ -51,11 +51,11 @@ child2:child2_ownval
 		(const Info_* parent,
 		 const Info_* root,
 		 const string& info_name,
-		 vector<string>::const_iterator& line,
+		 vector<string>::const_iterator line,
 		 vector<string>::const_iterator end,
 		 int tab_offset)
 	{
-		auto_ptr<Info_> retval(new Info_(parent, root, info_name));
+		unique_ptr<Info_> retval(new Info_(parent, root, info_name));
 		for ( ; ; )
 		{
 			int indent = line == end ? -1 : Indent(*line);
@@ -77,10 +77,10 @@ child2:child2_ownval
 	{
 		for (auto pc = content.begin(); pc != content.end(); ++pc)
 			if (pc->find(':') == string::npos)
-				return 0;
+				return nullptr;
 	// if any line does not contain a colon, then this function returns NULL and we can try some other parser
 	// if every line contains a colon, we will try to parse, and throw an exception on failure
-		return XParseRaw(0, 0, info_name, content.begin(), content.end(), 0);
+		return XParseRaw(nullptr, nullptr, info_name, content.begin(), content.end(), 0);
 	}
 
 	void CheckBackPointers
@@ -134,7 +134,7 @@ absolute_(false)
 		else
 		{
 			auto stop = find(start, src.end(), '/');
-			childNames_.push_back(string(start, stop));
+			childNames_.emplace_back(string(start, stop));
 			start = stop;	// don't need to skip the '/', the increment will do that
 			if (start == src.end())
 				break;

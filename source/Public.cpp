@@ -83,7 +83,7 @@ namespace
 		return make_pair(src.substr(0, aka), src.substr(aka + AKA.size()));
 	}
 
-	void PopulateArgument(Info_* arg, const string& name, const string& type, int dim, bool greedy, const string& subtype, bool optional, const string& def_val, const map<string, string>& in_type_translators, auto_ptr<Info_>* help, const vector<Handle_<Info_>>& conditions, auto_ptr<Info_>* insert)
+	void PopulateArgument(Info_* arg, const string& name, const string& type, int dim, bool greedy, const string& subtype, bool optional, const string& def_val, const map<string, string>& in_type_translators, unique_ptr<Info_>* help, const vector<Handle_<Info_>>& conditions, unique_ptr<Info_>* insert)
 	{
 		auto names = NamePair(name);
 		arg->content_ = names.first;
@@ -115,7 +115,7 @@ namespace
 		}
 		for (auto pi = in_type_translators.begin(); pi != in_type_translators.end(); ++pi)
 		{
-			auto_ptr<Info_> child(new Info_(arg, arg->root_, pi->first));
+			unique_ptr<Info_> child(new Info_(arg, arg->root_, pi->first));
 			if (!pi->second.empty())
 				child->children_.insert(make_pair(TRANSLATOR, Info::MakeLeaf(child.get(), arg->root_, pi->second)));
 			arg->children_.insert(make_pair(IN_TYPE, child.release()));
@@ -164,7 +164,7 @@ namespace
 		 bool optional,
 		 Handle_<Info_>* dst)
 	{
-		auto_ptr<Info_> arg(new Info_(parent, parent, string()));	// populate content later
+		unique_ptr<Info_> arg(new Info_(parent, parent, string()));	// populate content later
 		REQUIRE(!line->empty() && !StartsWithWhitespace(*line), "Expected un-indented line to declare argument");
 		auto is = line->find(IS);
 		REQUIRE(is != line->npos, "Input needs type declaration using 'is' (" + *line + ")");
@@ -187,7 +187,7 @@ namespace
 		ExtractTranslators(&rest, &inTranslators);
 		auto sub_def = SubtypeAndDefault(AfterInitialWhitespace(rest));
 		const string subtype = rest.empty() ? string() : AfterInitialWhitespace(rest);
-		auto_ptr<Info_> help, insert;
+		unique_ptr<Info_> help, insert;
 		++line;
 		vector<Handle_<Info_>> conditions;
 		line = ReadHelp(arg.get(), parent->root_, line, end, &help, &conditions);
@@ -231,7 +231,7 @@ namespace
 		 vector<string>::const_iterator end,
 		 Handle_<Info_>* suppress)
 	{
-		auto_ptr<Info_> temp;
+		unique_ptr<Info_> temp;
 		while (line != end && !line->empty() && line->front() == '-')
 		{
 			if (!temp.get())
@@ -256,10 +256,10 @@ namespace
 			 const vector<string>& content)
 		const
 		{
-			auto_ptr<Info_> retval(new Info_(0, 0, info_name));
+			unique_ptr<Info_> retval(new Info_(0, 0, info_name));
 			auto line = content.begin();
 			// read the help
-			auto_ptr<Info_> help;
+			unique_ptr<Info_> help;
 			line = ReadHelp(retval.get(), retval.get(), line, content.end(), &help);
 			if (help.get())
 				retval->children_.insert(make_pair(HELP, Handle_<Info_>(help.release())));
@@ -311,7 +311,7 @@ namespace
 			// maybe there are notes, or links
 			if (line != content.end() && *line == START_NOTES)
 			{
-				auto_ptr<Info_> notes;
+				unique_ptr<Info_> notes;
 				line = ReadHelp(retval.get(), retval.get(), ++line, content.end(), &notes);
 				if (notes.get())
 					retval->children_.insert(make_pair(NOTES, Handle_<Info_>(notes.release())));

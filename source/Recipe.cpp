@@ -15,14 +15,14 @@ using namespace std;
 
 namespace
 {
-	static const string INGREDIENT("ingredient");
-	static const string RECIPE("recipe");
-	static const string MEASURE("measure");
-	static const string NUMBER("number");
-	static const string PROCESSED("processed");
-	static const string ACTION("action");
-	static const string CO("co");
-	static const string PART("part");
+	const string INGREDIENT("ingredient");
+	const string RECIPE("recipe");
+	const string MEASURE("measure");
+	const string NUMBER("number");
+	const string PROCESSED("processed");
+	const string ACTION("action");
+	const string CO("co");
+	const string PART("part");
 
 	bool IsIngredientStart(const string& line)	// see if it might be an ingredient
 	{
@@ -58,7 +58,7 @@ namespace
 	string StandardMeasure(const string& src)
 	{
 		string retval(src);
-		transform(retval.begin(), retval.end(), retval.begin(), tolower);
+		transform(retval.begin(), retval.end(), retval.begin(), [](const unsigned char i){ return tolower(i); });
 		if (StartsWith(retval, "tbsp") || StartsWith(retval, "tablespoon"))
 			return "Tbsp";
 		if (StartsWith(retval, "tsp") || StartsWith(retval, "teaspoon"))
@@ -114,7 +114,7 @@ namespace
 			}
 			rest = rest.substr(0, comma);
 		}
-		auto_ptr<Info_> retval(new Info_(parent, root, TrimWhitespace(rest)));
+		unique_ptr<Info_> retval(new Info_(parent, root, TrimWhitespace(rest)));
 		if (!measure.empty())
 			retval->children_.insert(make_pair(MEASURE, Info::MakeLeaf(retval.get(), root, measure)));
 		if (!number.empty())
@@ -161,7 +161,7 @@ namespace
 			 const vector<string>& content)
 		const
 		{
-			auto_ptr<Info_> retval(new Info_(0, 0, info_name));
+			unique_ptr<Info_> retval(new Info_(nullptr, nullptr, info_name));
 			retval->root_ = retval.get();
 			auto line = content.begin();
 			// might have a c/o at the front
@@ -170,7 +170,7 @@ namespace
 			// have to check for parts
 			while (line != content.end() && IsNewPart(*line))
 			{
-				auto_ptr<Info_> part(new Info_(retval.get(), retval.get(), PartName(*line)));
+				unique_ptr<Info_> part(new Info_(retval.get(), retval.get(), PartName(*line)));
 				line = AddIngredientsAndActions(part.get(), retval.get(), ++line, content.end());
 				retval->children_.insert(make_pair(PART, part.release()));
 			}

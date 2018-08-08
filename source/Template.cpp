@@ -1,6 +1,6 @@
  
 #include "Template.h"
-#include <assert.h>
+#include <cassert>
 #include "Emitter.h"
 #include "Info.h"
 #include "ParseUtils.h"
@@ -14,10 +14,10 @@ using ParseUtils::IsAllWhite;
 
 namespace
 {
-	static const char NEWLINE('\n');
-	static const char BACKQ('`');
-	static const char PCT('%');
-	static const char COLON(':');
+	const char NEWLINE('\n');
+	const char BACKQ('`');
+	const char PCT('%');
+	const char COLON(':');
 
 	bool IsComment(string::const_iterator letter, string::const_iterator line)
 	{
@@ -208,7 +208,7 @@ namespace
 		vector<Handle_<Emitter_> > vals_;
 		void Append(Emitter_* e)	// captures the input pointer
 		{
-			vals_.push_back(Handle_<Emitter_>(e));
+			vals_.emplace_back(Handle_<Emitter_>(e));
 		}
 		vector<string> operator()(const Info_& arg, const Emitter::Funcs_& lib) const override
 		{
@@ -225,15 +225,15 @@ namespace
 	struct Literal_ : Emitter_	 // emit literal text
 	{
 		string literal_;
-		Literal_(string l) : literal_(l) {}
+		Literal_(const string& l) : literal_(l) {}
 		vector<string> operator()(const Info_&, const Emitter::Funcs_&) const override
 		{
 			return vector<string>(1, literal_);
 		}
 	};
 
-	static const std::regex HAS_NONWHITE("\\S");
-	static const std::regex IS_BLANK("^\\s*$");	// NOT USED -- I think something odd about the definition of what is a newline, causes this to match when it shouldn't
+	const std::regex HAS_NONWHITE("\\S");
+	const std::regex IS_BLANK("^\\s*$");	// NOT USED -- I think something odd about the definition of what is a newline, causes this to match when it shouldn't
 	struct Conditional_ : Emitter_	// if A, emit B
 	{
 		Handle_<Emitter_> cond_;
@@ -337,7 +337,7 @@ namespace
 	Emitter_* ParseFunc(const string& src, bool quiet = false)
 	{
 		assert(src.find(EOF) == src.npos);	// not prepared for EOF inside body
-		auto_ptr<Composite_> retval(new Composite_);
+		unique_ptr<Composite_> retval(new Composite_);
 		for (string::const_iterator here = src.begin(); here != src.end(); )
 		{
 			if (*here == PCT)
@@ -457,7 +457,7 @@ namespace
 		{
 			if (bs)	// just saw a backslash
 			{
-				if (*ps == '"' || *ps == '\\')	// it's already a \" or \\, we need to write \\"" or \\\\ 
+				if (*ps == '"' || *ps == '\\') /* // it's already a \" or \\, we need to write \\"" or \\\\ */
 				{
 					retval.push_back('\\');
 					retval.push_back('\\');
@@ -485,7 +485,7 @@ namespace
 	}
 
 	// global counter shared all emitters
-	static int THE_COUNT = 0;
+	int THE_COUNT = 0;
 	struct EmitCounter_ : Emitter_	
 	{
 		vector<string> operator()(const Info_&, const Emitter::Funcs_&) const override
