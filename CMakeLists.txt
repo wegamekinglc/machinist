@@ -22,4 +22,5 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(source)
+add_subdirectory(machinist)
 

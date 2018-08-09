@@ -1,6 +1,6 @@
  // Machinist.cpp : Defines the entry point for the console application.
 //
-#include "Handle.h"
+#include <source/Handle.h>
 #ifdef _WIN32
     #include <direct.h>
     #define getcwd _getcwd // stupid MSFT "deprecation" warning
@@ -9,12 +9,12 @@
 #endif
 #include <iostream>
 #include <fstream>
-#include <assert.h>
+#include <cassert>
 #include <numeric>
-#include "Config.h"
-#include "Emitter.h"
-#include "Info.h"
-#include "File.h"
+#include <source/Config.h>
+#include <source/Emitter.h>
+#include <source/Info.h>
+#include <source/File.h>
 
 using std::pair;
 using std::cout;

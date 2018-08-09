@@ -88,6 +88,7 @@ string File::PathOnly(const string& filename)
 }
 
 
+#ifdef _WIN32
 vector<string> File::List
 	(const string& dir,
 	 const string& pattern,
@@ -109,6 +110,27 @@ vector<string> File::List
 	FindClose(hfind);
 	return retval;
 }
+#else
+vector<string> File::List
+	(const string& dir,
+	 const string& pattern,
+	 const vector<string>& reject_patterns) {
+	std::vector<std::string> files;
+	std::string search_path = directoryPath + "/" + pattern;
+	DIR *dp;
+	struct dirent *dirp;
+	if ((dp = opendir(directoryPath.c_str())) == NULL)
+	{
+		std::cout << "Error(" << errno << ") opening " << directoryPath << std::endl;
+		return errno;
+	}
+
+	while ((dirp = readdir(dp)) != NULL) {
+		files.push_back(string(dirp->d_name));
+	}
+	closedir(dp);
+}
+#endif
 
 string File::InfoType(const string& filename)
 {
