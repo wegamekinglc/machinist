@@ -4,7 +4,10 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
-#include <windows.h>
+//#include <windows.h>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 void File::Read
 	(const string& filename,
@@ -87,50 +90,26 @@ string File::PathOnly(const string& filename)
 	return retval;
 }
 
-
-#ifdef _WIN32
 vector<string> File::List
 	(const string& dir,
 	 const string& pattern,
 	 const vector<string>& reject_patterns)
 {
-	WIN32_FIND_DATAA found;
-	HANDLE hfind = FindFirstFileA((Path(dir) + pattern).c_str(), &found);
+	fs::recursive_directory_iterator it(dir);
+	fs::recursive_directory_iterator endit;
 	vector<string> retval;
-	while (hfind != INVALID_HANDLE_VALUE)
+	while(it != endit)
 	{
 		bool reject = false;
+		string file_name = it->path().filename().string();
 		for (auto pr = reject_patterns.begin(); pr != reject_patterns.end() && !reject; ++pr)
-			reject = wildcmp(pr->c_str(), found.cFileName);
+			reject = wildcmp(pr->c_str(), file_name.c_str());
 		if (!reject)
-			retval.push_back(string(found.cFileName));
-		if (!FindNextFileA(hfind, &found))
-			break;
+			retval.push_back(file_name);
+		++it;
 	}
-	FindClose(hfind);
 	return retval;
 }
-#else
-vector<string> File::List
-	(const string& dir,
-	 const string& pattern,
-	 const vector<string>& reject_patterns) {
-	std::vector<std::string> files;
-	std::string search_path = directoryPath + "/" + pattern;
-	DIR *dp;
-	struct dirent *dirp;
-	if ((dp = opendir(directoryPath.c_str())) == NULL)
-	{
-		std::cout << "Error(" << errno << ") opening " << directoryPath << std::endl;
-		return errno;
-	}
-
-	while ((dirp = readdir(dp)) != NULL) {
-		files.push_back(string(dirp->d_name));
-	}
-	closedir(dp);
-}
-#endif
 
 string File::InfoType(const string& filename)
 {
@@ -142,6 +121,7 @@ string File::InfoType(const string& filename)
 	REQUIRE(dot != string::npos, "Input filename should have two separator periods");
 	return rest.substr(0, dot);
 }
+
 string File::InfoName(const string& filename)
 {
 	// filenames should have the form "<name>.<type>.if"
