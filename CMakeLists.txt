@@ -27,6 +27,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 else()
     set(CMAKE_CXX_STANDARD 14)
 endif()
+add_definitions(-DPROJECT_SOURCE="${CMAKE_SOURCE_DIR}")
 
 find_package(Boost)
 if (Boost_FOUND)

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <istream>
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -97,14 +98,18 @@ vector<string> File::List
 	fs::recursive_directory_iterator it(dir);
 	fs::recursive_directory_iterator endit;
 	vector<string> retval;
+	const boost::regex filter(pattern);
 	while(it != endit)
 	{
 		bool reject = false;
+		boost::smatch what;
 		string file_name = it->path().filename().string();
-		for (auto pr = reject_patterns.begin(); pr != reject_patterns.end() && !reject; ++pr)
-			reject = wildcmp(pr->c_str(), file_name.c_str());
-		if (!reject)
-			retval.push_back(file_name);
+		if(boost::regex_match(file_name, what, filter)) {
+			for (auto pr = reject_patterns.begin(); pr != reject_patterns.end() && !reject; ++pr)
+				reject = wildcmp(pr->c_str(), file_name.c_str());
+			if (!reject)
+				retval.push_back(file_name);
+		}
 		++it;
 	}
 	return retval;

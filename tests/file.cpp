@@ -9,8 +9,8 @@
 using namespace File;
 
 TEST(FileTest, TestFileList) {
-    string src_dir = "D:/dev/github/machinist/data";
-    string pattern = "sample*";
+    string src_dir = string(PROJECT_SOURCE) + "/data";
+    string pattern = "sample.*";
     vector<string> rejects(1, "*2*");
     vector<string> files = List(src_dir, pattern, rejects);
 

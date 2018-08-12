@@ -271,7 +271,10 @@ void XMain(int argc, char* argv[])
 		{
 			vector<string> infoFiles = File::List(*pd, ps->filePattern_, ps->rejectPatterns_);
 			for (auto pi = infoFiles.begin(); pi != infoFiles.end(); ++pi, ++nRead)
+			{
+				cout << *pi << std::endl;
 				WriteOneFile(config, libContents, path, *pi, ps->startToken_, ps->stopToken_, &thingsRead, &nWritten, &nLines);
+			}
 		}
 		cout << "Scanned " << nRead << " files (" << nLines << " lines), found " << thingsRead.size() << " blocks\n";
 		// finally write the whole-directory info
