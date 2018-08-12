@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(machinist VERSION 1.0.0)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Release)
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libraries" False)

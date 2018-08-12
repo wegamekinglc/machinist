@@ -1,7 +1,8 @@
-file(GLOB_RECURSE MACHINIST_FILES "*.hpp" "*.cpp")
-add_executable(machinist ${MACHINIST_FILES})
+file(GLOB_RECURSE MACHINIST_FILES "*.hpp" "*.cpp" "${CMAKE_INSTALL_PREFIX}/source/*.hpp" "${CMAKE_INSTALL_PREFIX}/source/*.cpp")
+list(FILTER MACHINIST_FILES EXCLUDE REGEX ".*Storable.cpp$")
+list(FILTER MACHINIST_FILES EXCLUDE REGEX ".*Pattern.cpp$")
 
-target_link_libraries(machinist maclib)
+add_executable(machinist ${MACHINIST_FILES})
 
 install(TARGETS machinist
         RUNTIME DESTINATION bin
