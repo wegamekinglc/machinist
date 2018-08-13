@@ -51,7 +51,7 @@ child2:child2_ownval
 		(const Info_* parent,
 		 const Info_* root,
 		 const string& info_name,
-		 vector<string>::const_iterator line,
+		 vector<string>::const_iterator& line,
 		 vector<string>::const_iterator end,
 		 int tab_offset)
 	{
